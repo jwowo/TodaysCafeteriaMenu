@@ -6,13 +6,12 @@ from pymongo import MongoClient
 # 해시 함수 사용
 import hashlib
 # 토큰에 만료시간을 주기 위해 사용
-from datetime import datetime, date
+from datetime import datetime
 # 현재 날짜를 알기 위해 사용
 import datetime as dt
 # 크롤링 위한 함수 호출
 from bs4 import BeautifulSoup
 import requests
-import json
 
 app = Flask(__name__)
 
@@ -39,19 +38,19 @@ def todayMenu(d_today_str):
     headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
     data = requests.get(url_today,headers=headers)
     soup = BeautifulSoup(data.text, 'html.parser')
-    times = ['breakfast','lunch','dinner']
+    times = ['breakfirst','lunch','dinner']
 
     for time in times:
         selector1 = '#tab_item_1 > table > tbody > tr > td:nth-child('
         selector2 = ')'
-        if time == 'breakfast':
+        if time == 'breakfirst':
             selector_time = '1'
             selector_final = selector1 + selector_time + selector2
-            menus_breakfast = soup.select_one(selector_final).text
-            menus_breakfast_list = menus_breakfast.replace("*","").replace("\t","").replace("\n","").replace("\r","_").split("_")
-            for menu_breakfast in menus_breakfast_list:
-                if(menu_breakfast == ""):
-                    menus_breakfast_list.remove("")
+            menus_breakfirst = soup.select_one(selector_final).text
+            menus_breakfirst_list = menus_breakfirst.replace("*","").replace("\t","").replace("\n","").replace("\r","_").split("_")
+            for menu_breakfirst in menus_breakfirst_list:
+                if(menu_breakfirst == ""):
+                    menus_breakfirst_list.remove("")
         elif time == 'lunch':
             selector_time = '2'
             selector_final = selector1 + selector_time + selector2
@@ -69,12 +68,12 @@ def todayMenu(d_today_str):
                 if(menu_dinner == ""):
                     menus_dinner_list.remove("")
         
-    menus = {'breakfast' : menus_breakfast_list,'lunch':menus_lunch_list, 'dinner' : menus_dinner_list}
+    menus = {'breakfirst' : menus_breakfirst_list,'lunch':menus_lunch_list, 'dinner' : menus_dinner_list}
     return menus
 
 ##금일 날짜 str형태로 반환 2021-11-03
 def strToday():
-    d_today = dt.date.today()
+    d_today = datetime.date.today()
     d_today_str = d_today.strftime('%Y-%m-%d')
     return d_today_str
 
@@ -91,17 +90,14 @@ def averageRating(all_menus,menus_receive):
             else:
                 continue
         if count >= 3:
-            total_rating += int(all_menus[i]['rating'])
+            total_rating += all_menus[i]['rating']
             total_count += 1
             count = 0
         else:
             count = 0
             continue
     
-    if total_count == 0:
-        return 0
-    else:
-        return round( total_rating / total_count, 1 )
+    return total_rating / total_count
 
 #all_Info 에서 menus와 일치하는 정보를 리스트 형태로 반환 [{유저1_정보},{유저2_정보},,,]
 def usersInfo(all_Info,menus):
@@ -168,7 +164,7 @@ def api_login():
    if result is not None:
       payload = {
          'id': id_receive,
-         'exp': dt.datetime.utcnow() + dt.timedelta(seconds=60 * 60 * 24)
+         'exp': dt.datetime.utcnow() + dt.timedelta(seconds=60 * 60)
       }
       token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
       # print('token--------------', token)
@@ -218,81 +214,68 @@ def main():
    menus = todayMenu(strToday())
    
    #시간별 메뉴 리스트
-   menus_breakfast = menus['breakfast']
+   menus_breakfirst = menus['breakfirst']
    menus_lunch = menus['lunch']
    menus_dinner = menus['dinner']
    
    #금일 시간별 메뉴와 일치하는 DB상의 평점들의 평균값
-   rating_breakfast = averageRating(all_Info,menus_breakfast)
+   rating_breakfirst = averageRating(all_Info,menus_breakfirst)
    rating_lunch = averageRating(all_Info,menus_lunch)
    rating_dinner = averageRating(all_Info,menus_dinner)
 
    #금일 시간별 메뉴와 일치하는 DB상의 유저정보(id,코멘트,작성일,평점)
-   usersInfo_breakfast = usersInfo(all_Info,menus_breakfast)
+   usersInfo_breakfirst = usersInfo(all_Info,menus_breakfirst)
    usersInfo_lunch = usersInfo(all_Info,menus_lunch)
    usersInfo_dinner = usersInfo(all_Info,menus_dinner)
-
-   
-
+    
+    
    token_receive = request.cookies.get('token')
    try:
       payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-
-      current_user = payload['id'];
-    
-      data = {
-       "showToday" : strToday(), 
-        "menusBreakfast" : menus_breakfast,
-        "menusLunch" : menus_lunch, 
-        "menusDinner" : menus_dinner, 
-        "ratingBreakfast" : rating_breakfast, 
-        "ratingLunch" : rating_lunch,
-        "ratingDinner" : rating_dinner, 
-        "usersInfoBreakfast" : usersInfo_breakfast, 
-        "usersInfoLunch" : usersInfo_lunch,
-        "usersInfoDinner" : usersInfo_dinner,
-        "currentUser" : current_user 
-    }
-      ###
-      
-      return render_template('main.html', data=json.dumps(data, ensure_ascii=False),
-        showToday = strToday(), 
-        menusBreakfast = menus_breakfast,
-        menusLunch = menus_lunch, 
-        menusDinner = menus_dinner, 
-        ratingBreakfast = rating_breakfast, 
-        ratingLunch =rating_lunch,
-        ratingDinner =rating_dinner, 
-        usersInfoBreakfast = usersInfo_breakfast, 
-        usersInfoLunch = usersInfo_lunch,
-        usersInfoDinner = usersInfo_dinner,
-        currentUser = current_user 
-    )
+         
+      return render_template('main.html', showToday = strToday(), menusBreakfirst = menus_breakfirst,
+    menusLunch = menus_lunch, menusDinner = menus_dinner, ratingBreakfirst = rating_breakfirst, ratingLunch =rating_lunch,
+    ratingDinner =rating_dinner, usersInfoBreakfirst = usersInfo_breakfirst, usersInfoLunch = usersInfo_lunch,
+    usersInfoDinner = usersInfo_dinner)
    except jwt.ExpiredSignatureError:
       return redirect(url_for("login"))
    except jwt.exceptions.DecodeError:
       return redirect(url_for("login"))
 
-@app.route('/main/saveComment', methods=['POST'])
-def save_comment():
+@app.route('/main/post', methods=['POST'])
+def post_memo():
 	# 1. 클라이언트로부터 데이터를 받기
-    userId_receive = request.form['userId_give'] # 작성자
+    userId_receive = request.form['userId_give']
     postDate_receive = request.form['postDate_give']
-    menus_receive = request.form.getlist('menus_give[]')
+    time_receive = request.form['time_give']
+    menus_receive = request.form['menus_give']
     rating_receive = request.form['rating_give']
     comment_receive = request.form['comment_give']
     
-    print('=================',menus_receive)
-
-    print(userId_receive);
     # 2. mongoDB 에 입력
-    doc = {'userId': userId_receive,'postDate': postDate_receive,
+    doc = {'userId': userId_receive,'postDate': postDate_receive,'time': time_receive,
     'menus': menus_receive,'rating': rating_receive,'comment': comment_receive}
 		
     db.postInfo.insert_one(doc)
 
-    return jsonify({"result" : "success"});
-    # return render_template('/main.html')
+    return render_template('/main.html')
+
+
+
+
+# @app.get('/main')
+# def main():
+#     decoded = decode_token()
+#     if decoded['result'] != 'success':
+#         return render_template('main.html', token_err_msg=decoded['msg'])
+#     else:
+#        print(decoded['msg']) 
+#     user_info = db.users.find_one({'user_id': decoded['data']}, {'_id': False})
+   
+   
+
+#     return render_template('login.html', page_name="home", user_info=user_info)
+
 
 if __name__ == '__main__':  
    app.run('0.0.0.0',port=5000,debug=True)
