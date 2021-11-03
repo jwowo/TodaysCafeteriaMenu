@@ -12,6 +12,7 @@ import datetime as dt
 # 크롤링 위한 함수 호출
 from bs4 import BeautifulSoup
 import requests
+import json
 
 app = Flask(__name__)
 
@@ -90,7 +91,7 @@ def averageRating(all_menus,menus_receive):
             else:
                 continue
         if count >= 3:
-            total_rating += all_menus[i]['rating']
+            total_rating += int(all_menus[i]['rating'])
             total_count += 1
             count = 0
         else:
@@ -230,13 +231,31 @@ def main():
    usersInfo_breakfast = usersInfo(all_Info,menus_breakfast)
    usersInfo_lunch = usersInfo(all_Info,menus_lunch)
    usersInfo_dinner = usersInfo(all_Info,menus_dinner)
-    
-    
+
+   
+
    token_receive = request.cookies.get('token')
    try:
       payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-         
-      return render_template('main.html', 
+
+      current_user = payload['id'];
+    
+      data = {
+       "showToday" : strToday(), 
+        "menusBreakfast" : menus_breakfast,
+        "menusLunch" : menus_lunch, 
+        "menusDinner" : menus_dinner, 
+        "ratingBreakfast" : rating_breakfast, 
+        "ratingLunch" : rating_lunch,
+        "ratingDinner" : rating_dinner, 
+        "usersInfoBreakfast" : usersInfo_breakfast, 
+        "usersInfoLunch" : usersInfo_lunch,
+        "usersInfoDinner" : usersInfo_dinner,
+        "currentUser" : current_user 
+    }
+      ###
+      
+      return render_template('main.html', data=json.dumps(data, ensure_ascii=False),
         showToday = strToday(), 
         menusBreakfast = menus_breakfast,
         menusLunch = menus_lunch, 
@@ -246,30 +265,35 @@ def main():
         ratingDinner =rating_dinner, 
         usersInfoBreakfast = usersInfo_breakfast, 
         usersInfoLunch = usersInfo_lunch,
-        usersInfoDinner = usersInfo_dinner
+        usersInfoDinner = usersInfo_dinner,
+        currentUser = current_user 
     )
    except jwt.ExpiredSignatureError:
       return redirect(url_for("login"))
    except jwt.exceptions.DecodeError:
       return redirect(url_for("login"))
 
-@app.route('/main/post', methods=['POST'])
-def post_memo():
+@app.route('/main/saveComment', methods=['POST'])
+def save_comment():
 	# 1. 클라이언트로부터 데이터를 받기
-    userId_receive = request.form['userId_give']
+    userId_receive = request.form['userId_give'] # 작성자
     postDate_receive = request.form['postDate_give']
-    time_receive = request.form['time_give']
-    menus_receive = request.form['menus_give']
+    # time_receive = request.form['time_give']
+    menus_receive = request.form.getlist('menus_give[]')
     rating_receive = request.form['rating_give']
     comment_receive = request.form['comment_give']
     
+    print('=================',menus_receive)
+
+    print(userId_receive);
     # 2. mongoDB 에 입력
-    doc = {'userId': userId_receive,'postDate': postDate_receive,'time': time_receive,
+    doc = {'userId': userId_receive,'postDate': postDate_receive,
     'menus': menus_receive,'rating': rating_receive,'comment': comment_receive}
 		
     db.postInfo.insert_one(doc)
 
-    return render_template('/main.html')
+    return jsonify({"result" : "success"});
+    # return render_template('/main.html')
 
 
 
@@ -283,8 +307,6 @@ def post_memo():
 #        print(decoded['msg']) 
 #     user_info = db.users.find_one({'user_id': decoded['data']}, {'_id': False})
    
-   
-
 #     return render_template('login.html', page_name="home", user_info=user_info)
 
 

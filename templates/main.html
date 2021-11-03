@@ -84,6 +84,34 @@
         text-align: center;
         background-color: bisque;
       }
+
+      /* 정적 별 스타일 */
+      .star-ratings {
+        color: #aaa9a9; 
+        position: relative;
+        unicode-bidi: bidi-override;
+        width: max-content;
+        -webkit-text-fill-color: transparent; /* Will override color (regardless of order) */
+        -webkit-text-stroke-width: 1.3px;
+        -webkit-text-stroke-color: #2b2a29;
+      }
+ 
+      .star-ratings-fill {
+        color: #fff58c;
+        padding: 0;
+        position: absolute;
+        z-index: 1;
+        display: flex;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        -webkit-text-fill-color: gold;
+      }
+      
+      .star-ratings-base {
+        z-index: 0;
+        padding: 0;
+      }
     </style>
     <script>
       function postComment() {
@@ -100,16 +128,102 @@
           return;
         }
 
-        console.log(comment_text, comment_star);
-        window.location.reload();
+        console.log( {{ data|safe }} );
+        let data = {{ data|safe }};
+        
+        // 조식, 중식, 석식 구분
+        let meal_time = $(".modal-title").text();
+  
+        console.log(meal_time);
+        if( meal_time == "오늘의 점심입니다." ){
+          $.ajax({
+            type: "POST",
+            url: "/main/saveComment",
+            data: {
+              userId_give : data.currentUser,
+              postDate_give : data.showToday,
+              menus_give : data.menusLunch,
+              rating_give : comment_star,
+              comment_give : comment_text
+            },
+            success: function(response) {
+              if (response["result"] == "success") {
+                // alert("포스팅 성공~!");
+                window.location.reload();
+              }
+              else {
+                alert("오류");
+              }
+            }
+          })
+        }
+
+
+        console.log(comment_text, comment_star, typeof comment_star);
+        // window.location.reload();
       }
 
-      function whichTime() {
-        let which_time = $("#breakfast_button").text();
-        console.log(
-          "---" + which_time + "---" + $("#breakfast_button").val() + "---"
-        );
+
+      // 조식,중식,석식 버튼을 눌렀을때 아침이면 해당 html 태그 값들을 넣어서 append
+      $(document).on("click", "#meal_button", function(){
+        let meal_time = $(this).data('id');
+
+        if ( meal_time == 'breakfast') {
+          
+        }
+        else if (meal_time == 'lunch') {
+          append_html( {{ data|safe }}, meal_time )
+          // let menus = JSON.pares( {{ data | safe }} )
+          // console.log(menus);
+          // $(".list-group").append()
+        }
+      });
+
+      function append_html(data, meal_time) {
+        console.log(data);
+        
+        if (meal_time == 'lunch'){
+          // 모달 제목
+          $(".modal-title").html("");
+          $(".modal-title").text('오늘의 점심입니다.');
+
+          // 메뉴 리스트
+          // console.log(data.menusLunch.length);
+          let menu_list = '';
+          for ( let i = 0; i < data.menusLunch.length; i++ ) {
+            // console.log(i);
+            menu_list += `<li class="list-group-item">${data.menusLunch[i]}</li>`;
+          }
+          $(".list-group").html("");
+          $(".list-group").append(menu_list);
+          
+          // 해당 메뉴 점수 표시
+          let menu_rating = data.ratingLunch;
+          if( menu_rating == null ){
+            $(".menu_rating").text('아직 후기가 없습니다.');
+          }
+          else
+          $(".menu_rating").html("");
+          $(".menu_rating").text( String(menu_rating) + " / 5");
+
+          // 해당 메뉴 별점수 표시
+          let star_score = menu_rating / 5 * 100
+          // console.log(star_score);
+          let star_html = `<div class="star-ratings-fill space-x-2 text-lg" style="width:${star_score}%;font-size: 40px;">
+                              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                          </div>
+                        
+                          <div class="star-ratings-base space-x-2 text-lg" style="font-size: 40px;">
+                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                          </div>`;
+          $(".star-ratings").html("");
+          $(".star-ratings").append(star_html);
+        }
+        
       }
+
+      
+
     </script>
   </head>
   <body>
@@ -117,19 +231,22 @@
       <p>Hello, jungle</p>
       <p>오늘의 학식</p>
       <p>{{ showToday }}</p>
-      <!-- <p>{{ ratingBreakfast }}</p>
-      <p>{{ usersInfoBreakfast }}</p>
-      <p>{{ menusBreakfast }}</p> -->
-
-      <!-- <p>{{today_date}}</p> -->
 
       <!-- Button trigger modal -->
-      <div type="button" id="breakfast_button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#breakfastModal" onClick="whichTime()">
+
+      <div type="button" id="meal_button" data-id="breakfast" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#breakfastModal">
         오늘의 조식
       </div>
 
-      <!-- Modal -->
+      <div type="button" id="meal_button" data-id="lunch" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#breakfastModal">
+        오늘의 중식
+      </div>
 
+      <div type="button" id="meal_button" data-id="dinner" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#breakfastModal">
+        오늘의 석식
+      </div>
+
+      <!-- Modal -->
       <div class="modal fade" id="breakfastModal" tabindex="-1" aria-labelledby="breakfastModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
           <div class="modal-content">
@@ -137,26 +254,31 @@
             <!-- Modal header -->
             <div class="modal-header" style="text-align: center">
               <h5 class="modal-title" id="breakfastModalLabel">
-                오늘의 조식입니다.
+
               </h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             
             <!-- Modal content -->
             <div class="modal-body">
-              <div>오늘의 메뉴</div>
+              <h1>오늘의 메뉴</h1>
                 <!-- 메뉴 및 평점 표시 -->
                 <div class="row">
                   <div class="col-9">
-                    <ul class="list-group">
-                      {% for menu in menusBreakfast %}
-                      <li class="list-group-item">{{menu}}</li>
-                      {% endfor %}
-                    </ul>
+
+                    <!-- 메뉴 리스트 화면에 표시 -->
+                    <ul class="list-group"></ul>
                   </div>
-                  <!-- <div class="col-3">{{breakfast_avg_rating}}</div> -->
+                  <div class="col-3">
+                    <!-- 해당 메뉴 점수 표시 (e.g 5 / 5 ) -->
+                    <h1 class="menu_rating"></h1>
+
+                    <!-- 해당 메뉴 별 점수 표시 -->
+                    <div class="star-ratings"></div>
+                  
+                  </div>
+                </div>
               </div>
-            </div>
 
             <!-- 리뷰 작성하기 -->
             <div id="post-box" class="form-post" style="padding: 20px">
