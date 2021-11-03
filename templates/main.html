@@ -90,7 +90,25 @@
         let comment_text = $("#comment_text").val();
         let comment_star = $("#comment_star").val();
 
+        if (comment_text == "") {
+          // window.location.reload();
+          alert("리뷰를 남겨주세요~! ");
+          return;
+        } else if (comment_star == "") {
+          // window.location.reload();
+          alert("별점을 1 ~ 5 사이로 입력해주세요~!");
+          return;
+        }
+
         console.log(comment_text, comment_star);
+        window.location.reload();
+      }
+
+      function whichTime() {
+        let which_time = $("#breakfast_button").text();
+        console.log(
+          "---" + which_time + "---" + $("#breakfast_button").val() + "---"
+        );
       }
     </script>
   </head>
@@ -98,51 +116,45 @@
     <div class="wrap">
       <p>Hello, jungle</p>
       <p>오늘의 학식</p>
+      <p>{{ showToday }}</p>
+      <!-- <p>{{ ratingBreakfast }}</p>
+      <p>{{ usersInfoBreakfast }}</p>
+      <p>{{ menusBreakfast }}</p> -->
+
       <!-- <p>{{today_date}}</p> -->
 
       <!-- Button trigger modal -->
-      <button
-        type="button"
-        class="btn btn-primary"
-        data-bs-toggle="modal"
-        data-bs-target="#breakfastModal"
-      >
+      <div type="button" id="breakfast_button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#breakfastModal" onClick="whichTime()">
         오늘의 조식
-      </button>
+      </div>
 
       <!-- Modal -->
-      <div
-        class="modal fade"
-        id="breakfastModal"
-        tabindex="-1"
-        aria-labelledby="breakfastModalLabel"
-        aria-hidden="true"
-      >
+
+      <div class="modal fade" id="breakfastModal" tabindex="-1" aria-labelledby="breakfastModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
           <div class="modal-content">
+            
+            <!-- Modal header -->
             <div class="modal-header" style="text-align: center">
               <h5 class="modal-title" id="breakfastModalLabel">
                 오늘의 조식입니다.
               </h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            
+            <!-- Modal content -->
             <div class="modal-body">
               <div>오늘의 메뉴</div>
-
-              <div class="row">
-                <div class="col-9">
-                  <ul>
-                    <!-- {% for menu in breakfast_menus %} -->
-                    <li>{{menu}}</li>
-                    <!-- {% endfor %} -->
-                  </ul>
-                </div>
-                <!-- <div class="col-3">{{breakfast_avg_rating}}</div> -->
+                <!-- 메뉴 및 평점 표시 -->
+                <div class="row">
+                  <div class="col-9">
+                    <ul class="list-group">
+                      {% for menu in menusBreakfast %}
+                      <li class="list-group-item">{{menu}}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                  <!-- <div class="col-3">{{breakfast_avg_rating}}</div> -->
               </div>
             </div>
 
@@ -150,27 +162,22 @@
             <div id="post-box" class="form-post" style="padding: 20px">
               <div>
                 <div class="form-group">
-                  <label form="post-comment">코멘트</label>
-                  <textarea
-                    id="comment_text"
-                    class="form-control"
-                    rows="2"
-                  ></textarea>
-                  <input
-                    id="comment_star"
-                    name="input-1"
-                    class="rating rating-loading"
-                    data-min="0"
-                    data-max="5"
-                    data-step="1"
-                  />
-                  <button
-                    type="button"
-                    class="btn btn-primary"
-                    onclick="postComment()"
-                  >
-                    저장
-                  </button>
+                  <div class="row">
+                    <div class="col-1">
+                      <label form="post-comment">코멘트</label>
+                    </div>
+                    <div class="col-7">
+                      <textarea id="comment_text" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="col-3">
+                      <input id="comment_star" name="input-1" class="rating rating-loading" data-min="0" data-max="5" data-step="1"/>
+                    </div>
+                    <div class="col-1">
+                      <button type="button" class="btn btn-primary" onclick="postComment()">
+                        저장
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 <!-- <div class="container">
                   <span id="rateMe1"></span>
@@ -188,17 +195,13 @@
               </div>
             </div>
 
-            <!-- 이전 리뷰 보기 -->
+            <!-- 이전 리뷰 보기 -->     
             <div>
               <div></div>
             </div>
 
             <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                 닫기
               </button>
             </div>
