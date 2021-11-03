@@ -4,6 +4,12 @@
     <title>main page</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+
+    <!-- Google Web Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
+
     <!-- Bootstrap -->
     <link
       rel="stylesheet"
@@ -76,13 +82,21 @@
     ></script>
     <!--  -->
     <style>
+      html,body{
+        width: 100%;
+        height: 100%;
+        background-color: #3f8ed0;
+        display: flex;
+      }
       .wrap {
         width: 600px;
-        height: 500px;
+        height: 600px;
         margin: auto;
-        vertical-align: middle;
+        /* vertical-align: middle; */
         text-align: center;
-        background-color: bisque;
+        background-color: white;
+        border-radius: 10px;
+        font-family: 'Do Hyeon', sans-serif;
       }
 
       /* 정적 별 스타일 */
@@ -232,6 +246,7 @@
                               <td>${comment_list[i].postDate}</td>
                               <td>${comment_list[i].userId}</td>
                               <td>${comment_list[i].comment}</td>
+                              <td>${comment_list[i].rating}</td>
                             </tr>`;
             }
           }
@@ -273,6 +288,7 @@
                               <td>${comment_list[i].postDate}</td>
                               <td>${comment_list[i].userId}</td>
                               <td>${comment_list[i].comment}</td>
+                              <td>${comment_list[i].rating} / 5</td>
                             </tr>`;
             }
           }
@@ -316,6 +332,7 @@
                               <td>${comment_list[i].postDate}</td>
                               <td>${comment_list[i].userId}</td>
                               <td>${comment_list[i].comment}</td>
+                              <td>${comment_list[i].rating} / 5</td>
                             </tr>`;
             }
           }
@@ -335,27 +352,27 @@
   </head>
   <body>
     <div class="wrap">
-      <p>Hello, jungle</p>
-      <p>오늘의 학식</p>
-      <p>{{ showToday }}</p>
+      <img src="../static/image/logo.jpg" alt="로고" style="display: block; margin:10% auto 10%; border-radius: 5px;"/>  
 
       <!-- Button trigger modal -->
+      <div class = "btn-group-vertical" style="margin: 0% auto 0%;">
+        <div type="button" id="meal_button" data-id="breakfast" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#breakfastModal">
+          오늘의 조식
+        </div>
 
-      <div type="button" id="meal_button" data-id="breakfast" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#breakfastModal">
-        오늘의 조식
+        <div type="button" id="meal_button" data-id="lunch" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#breakfastModal"
+        style="margin: 20% auto 20%;">
+          오늘의 중식
+        </div>
+
+        <div type="button" id="meal_button" data-id="dinner" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#breakfastModal">
+          오늘의 석식
+        </div>
+        <div style="margin: 70% auto 0%;">{{ showToday }}</div>
       </div>
-
-      <div type="button" id="meal_button" data-id="lunch" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#breakfastModal">
-        오늘의 중식
-      </div>
-
-      <div type="button" id="meal_button" data-id="dinner" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#breakfastModal">
-        오늘의 석식
-      </div>
-
       <!-- Modal -->
       <div class="modal fade" id="breakfastModal" tabindex="-1" aria-labelledby="breakfastModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-dialog modal-dialog-scrollable modal-xl">
           <div class="modal-content">
          
             <!-- Modal header -->
@@ -370,18 +387,18 @@
             <div class="modal-body">
               <h1>오늘의 메뉴</h1>
                 <!-- 메뉴 및 평점 표시 -->
-                <div class="row">
+                <div class="row mt-3">
                   <div class="col-9">
 
                     <!-- 메뉴 리스트 화면에 표시 -->
                     <ul class="list-group"></ul>
                   </div>
-                  <div class="col-3">
+                  <div class="col-3" style="margin:20px auto;">
                     <!-- 해당 메뉴 점수 표시 (e.g 5 / 5 ) -->
                     <h1 class="menu_rating"></h1>
 
                     <!-- 해당 메뉴 별 점수 표시 -->
-                    <div class="star-ratings"></div>
+                    <div class="star-ratings" style="margin:auto;"></div>
                   
                   </div>
                 </div>
@@ -392,41 +409,28 @@
               </div>
 
             <!-- 리뷰 작성하기 -->
-            <div id="post-box" class="form-post" style="padding: 20px">
-              <div>
-                <div class="form-group">
-                  <div class="row">
-                    <div class="col-1">
-                      <label form="post-comment">코멘트</label>
-                    </div>
-                    <div class="col-7">
-                      <textarea id="comment_text" class="form-control" rows="2"></textarea>
-                    </div>
-                    <div class="col-3">
-                      <input id="comment_star" name="input-1" class="rating rating-loading" data-min="0" data-max="5" data-step="1"/>
-                    </div>
-                    <div class="col-1">
-                      <button type="button" class="btn btn-primary" onclick="postComment()">
-                        저장
-                      </button>
+            <div class="card" style="width: 60rem; margin:auto; padding:10px">
+              <h5 class="card-title">리뷰 작성하기</h5>
+              <hr />
+              <div id="post-box" class="form-post">
+                <div>
+                  <div class="form-group">
+                      <div class="col-10" style="margin: 0 auto;">
+                        <textarea id="comment_text" class="form-control" rows="2"></textarea>
+                      </div>
+                      <div class="col-4 mt-3" style="margin: auto;">
+                        <input id="comment_star" name="input-1" class="rating rating-loading" data-min="0" data-max="5" data-step="1"/>
+                      </div>
+                      <div class="col-1 mt-3 mb-3" style="margin: auto;">
+                        <button type="button" class="btn" style="color:white;background-color:#3f8ed0;" onclick="postComment()">
+                          저장
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <!-- <div class="container">
-                  <span id="rateMe1"></span>
-                </div> -->
-
-                <!-- <input
-                    type="text"
-                    class="rating rating-loading"
-                    value="3.75"
-                    data-size="xl"
-                    data-theme="krajee-gly"
-                    title=""
-                  />
-                </form> -->
               </div>
-            </div>
+            
             <hr />
               <!-- <div style="width:100px">
                 <button type="button" class="btn btn-secondary">리뷰 보기</button>
@@ -438,9 +442,10 @@
               <table class="table">
                 <thead>
                   <tr>
-                    <th scope="col" class="col-2">작성일</th>
-                    <th scope="col" class="col-2">아이디</th>
-                    <th scope="col" class="col-9">리뷰</th>
+                    <th scope="col" class="col-2">작 성 일</th>
+                    <th scope="col" class="col-2">아 이 디</th>
+                    <th scope="col" class="col-6">리 뷰</th>
+                    <th scope="col" class="col-2">점 수</th>
                   </tr>
                 </thead>
                 <tbody class="comment_table">
@@ -451,7 +456,7 @@
             </div>
 
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              <button type="button" style="color:white;background-color:#3f8ed0;" class="btn" data-bs-dismiss="modal">
                 닫기
               </button>
             </div>

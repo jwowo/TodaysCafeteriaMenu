@@ -3,6 +3,12 @@
   <head>
     <title>Login page</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Google Web Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
+
     <!--  bulma  -->
     <link
       rel="stylesheet"
@@ -60,19 +66,24 @@
         });
       }
     </script>
+    <style>
+      .wrap {
+        font-family: 'Do Hyeon', sans-serif;
+      }
+    </style>
 
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script> -->
   </head>
   <body>
-    <section class="hero is-info is-fullheight">
+    <section class="hero is-info is-fullheight wrap">
       <div class="hero-body">
         <div class="container">
           <div class="columns is-centered">
             <div class="column is-6-tablet is-6-desktop is-5-widescreen">
               <form action="" class="box">
-                <img src="../static/image/logo.jpg" alt="로고"/>
-                <p
+                <img src="../static/image/logo.jpg" style ="display: block; margin: 0 auto; border-radius: 5px;"alt="로고"/>
+                <!-- <p
                   class="label"
                   style="
                     text-align: center;
@@ -81,7 +92,7 @@
                   "
                 >
                   로그인
-                </p>
+                </p> -->
                 
                 <div class="field">
                   <label for="" class="label">ID</label>
@@ -114,12 +125,12 @@
                   </div>
                 </div>
                 <div class="field" style="text-align: center">
-                  <button class="button is-link" onClick="login()">
+                  <button class="button is-info is-medium" onClick="login()">
                     로그인
                   </button>
                 </div>
                 <div class="field" style="text-align: right">
-                  <a href="/signup" class="button is-link is-small is-inverted">
+                  <a href="/signup" class="button is-info is-medium is-inverted">
                     회원가입
                   </a>
                 </div>
