@@ -167,7 +167,7 @@ def api_login():
    if result is not None:
       payload = {
          'id': id_receive,
-         'exp': dt.datetime.utcnow() + dt.timedelta(seconds=60 * 60)
+         'exp': dt.datetime.utcnow() + dt.timedelta(seconds=60 * 60 * 24)
       }
       token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
       # print('token--------------', token)
@@ -236,10 +236,18 @@ def main():
    try:
       payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
          
-      return render_template('main.html', showToday = strToday(), menusBreakfast = menus_breakfast,
-    menusLunch = menus_lunch, menusDinner = menus_dinner, ratingBreakfirst = rating_breakfast, ratingLunch =rating_lunch,
-    ratingDinner =rating_dinner, usersInfoBreakfirst = usersInfo_breakfast, usersInfoLunch = usersInfo_lunch,
-    usersInfoDinner = usersInfo_dinner)
+      return render_template('main.html', 
+        showToday = strToday(), 
+        menusBreakfast = menus_breakfast,
+        menusLunch = menus_lunch, 
+        menusDinner = menus_dinner, 
+        ratingBreakfast = rating_breakfast, 
+        ratingLunch =rating_lunch,
+        ratingDinner =rating_dinner, 
+        usersInfoBreakfast = usersInfo_breakfast, 
+        usersInfoLunch = usersInfo_lunch,
+        usersInfoDinner = usersInfo_dinner
+    )
    except jwt.ExpiredSignatureError:
       return redirect(url_for("login"))
    except jwt.exceptions.DecodeError:
