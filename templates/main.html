@@ -84,15 +84,26 @@
     ></script> -->
     <!--  -->
     <style>
+      html,body{
+        height: 100%;
+        width: 100%;
+        background-color: #3f8ed0;
+        display: flex;
+      }
       .wrap {
         width: 600px;
-        height: 500px;
+        height: 600px;
         margin: auto;
-        vertical-align: middle;
+        /* vertical-align: middle; */
         text-align: center;
+<<<<<<< HEAD
         background-color: bisque;
         /* font-family: 'Black Han Sans', sans-serif; */
         font-family: 'Do Hyeon', sans-serif;
+=======
+        border-radius: 10px;
+        background-color: white;
+>>>>>>> e9a9f5a2653e21e459f99ab6732bfb96a5f1e16f
       }
 
       /* 정적 별 스타일 */
@@ -337,8 +348,9 @@
       }
     </script>
   </head>
-  <body>
+  <body >
     <div class="wrap">
+<<<<<<< HEAD
       <h3>Hello, jungle</h3>
       <h1>오늘의 학식</h1>
       <h2>{{ showToday }}</h2>
@@ -352,8 +364,31 @@
       </div>
       <div type="button" id="meal_button" data-id="dinner" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#breakfastModal">
         오늘의 석식
-      </div>
+=======
+      <img src="../static/image/logo.jpg" style = "display: block; margin:10% auto 10%; ; border-radius: 5px;" alt="로고"/>
+      
+      
 
+      <!-- Button trigger modal -->
+      <div class ="btn-group-vertical" style="margin:0% auto 0%;">
+        <div type="button" id="meal_button" data-id="breakfast" 
+        class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#breakfastModal"
+        >
+          오늘의 조식
+        </div>
+
+        <div type="button" id="meal_button" data-id="lunch" class="btn btn-primary" 
+        data-bs-toggle="modal" data-bs-target="#breakfastModal"
+        style="margin:30px auto 30px;">
+          오늘의 중식
+        </div>
+
+        <div type="button" id="meal_button" data-id="dinner" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#breakfastModal">
+          오늘의 석식
+        </div>
+>>>>>>> e9a9f5a2653e21e459f99ab6732bfb96a5f1e16f
+      </div>
+      <div style="margin: 14% auto 5%;">{{ showToday }}</div>
       <!-- Modal -->
       <div class="modal fade" id="breakfastModal" tabindex="-1" aria-labelledby="breakfastModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
