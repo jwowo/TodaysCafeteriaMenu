@@ -6,7 +6,7 @@ from pymongo import MongoClient
 # 해시 함수 사용
 import hashlib
 # 토큰에 만료시간을 주기 위해 사용
-from datetime import datetime
+from datetime import datetime, date
 # 현재 날짜를 알기 위해 사용
 import datetime as dt
 # 크롤링 위한 함수 호출
@@ -38,19 +38,19 @@ def todayMenu(d_today_str):
     headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
     data = requests.get(url_today,headers=headers)
     soup = BeautifulSoup(data.text, 'html.parser')
-    times = ['breakfirst','lunch','dinner']
+    times = ['breakfast','lunch','dinner']
 
     for time in times:
         selector1 = '#tab_item_1 > table > tbody > tr > td:nth-child('
         selector2 = ')'
-        if time == 'breakfirst':
+        if time == 'breakfast':
             selector_time = '1'
             selector_final = selector1 + selector_time + selector2
-            menus_breakfirst = soup.select_one(selector_final).text
-            menus_breakfirst_list = menus_breakfirst.replace("*","").replace("\t","").replace("\n","").replace("\r","_").split("_")
-            for menu_breakfirst in menus_breakfirst_list:
-                if(menu_breakfirst == ""):
-                    menus_breakfirst_list.remove("")
+            menus_breakfast = soup.select_one(selector_final).text
+            menus_breakfast_list = menus_breakfast.replace("*","").replace("\t","").replace("\n","").replace("\r","_").split("_")
+            for menu_breakfast in menus_breakfast_list:
+                if(menu_breakfast == ""):
+                    menus_breakfast_list.remove("")
         elif time == 'lunch':
             selector_time = '2'
             selector_final = selector1 + selector_time + selector2
@@ -68,12 +68,12 @@ def todayMenu(d_today_str):
                 if(menu_dinner == ""):
                     menus_dinner_list.remove("")
         
-    menus = {'breakfirst' : menus_breakfirst_list,'lunch':menus_lunch_list, 'dinner' : menus_dinner_list}
+    menus = {'breakfast' : menus_breakfast_list,'lunch':menus_lunch_list, 'dinner' : menus_dinner_list}
     return menus
 
 ##금일 날짜 str형태로 반환 2021-11-03
 def strToday():
-    d_today = datetime.date.today()
+    d_today = dt.date.today()
     d_today_str = d_today.strftime('%Y-%m-%d')
     return d_today_str
 
@@ -97,7 +97,10 @@ def averageRating(all_menus,menus_receive):
             count = 0
             continue
     
-    return total_rating / total_count
+    if total_count == 0:
+        return 0
+    else:
+        return total_rating / total_count
 
 #all_Info 에서 menus와 일치하는 정보를 리스트 형태로 반환 [{유저1_정보},{유저2_정보},,,]
 def usersInfo(all_Info,menus):
@@ -214,17 +217,17 @@ def main():
    menus = todayMenu(strToday())
    
    #시간별 메뉴 리스트
-   menus_breakfirst = menus['breakfirst']
+   menus_breakfast = menus['breakfast']
    menus_lunch = menus['lunch']
    menus_dinner = menus['dinner']
    
    #금일 시간별 메뉴와 일치하는 DB상의 평점들의 평균값
-   rating_breakfirst = averageRating(all_Info,menus_breakfirst)
+   rating_breakfast = averageRating(all_Info,menus_breakfast)
    rating_lunch = averageRating(all_Info,menus_lunch)
    rating_dinner = averageRating(all_Info,menus_dinner)
 
    #금일 시간별 메뉴와 일치하는 DB상의 유저정보(id,코멘트,작성일,평점)
-   usersInfo_breakfirst = usersInfo(all_Info,menus_breakfirst)
+   usersInfo_breakfast = usersInfo(all_Info,menus_breakfast)
    usersInfo_lunch = usersInfo(all_Info,menus_lunch)
    usersInfo_dinner = usersInfo(all_Info,menus_dinner)
     
@@ -233,9 +236,9 @@ def main():
    try:
       payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
          
-      return render_template('main.html', showToday = strToday(), menusBreakfirst = menus_breakfirst,
-    menusLunch = menus_lunch, menusDinner = menus_dinner, ratingBreakfirst = rating_breakfirst, ratingLunch =rating_lunch,
-    ratingDinner =rating_dinner, usersInfoBreakfirst = usersInfo_breakfirst, usersInfoLunch = usersInfo_lunch,
+      return render_template('main.html', showToday = strToday(), menusBreakfast = menus_breakfast,
+    menusLunch = menus_lunch, menusDinner = menus_dinner, ratingBreakfirst = rating_breakfast, ratingLunch =rating_lunch,
+    ratingDinner =rating_dinner, usersInfoBreakfirst = usersInfo_breakfast, usersInfoLunch = usersInfo_lunch,
     usersInfoDinner = usersInfo_dinner)
    except jwt.ExpiredSignatureError:
       return redirect(url_for("login"))
