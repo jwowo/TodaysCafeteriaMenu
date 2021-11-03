@@ -101,7 +101,7 @@ def averageRating(all_menus,menus_receive):
     if total_count == 0:
         return 0
     else:
-        return total_rating / total_count
+        return round( total_rating / total_count, 1 )
 
 #all_Info 에서 menus와 일치하는 정보를 리스트 형태로 반환 [{유저1_정보},{유저2_정보},,,]
 def usersInfo(all_Info,menus):
@@ -278,7 +278,6 @@ def save_comment():
 	# 1. 클라이언트로부터 데이터를 받기
     userId_receive = request.form['userId_give'] # 작성자
     postDate_receive = request.form['postDate_give']
-    # time_receive = request.form['time_give']
     menus_receive = request.form.getlist('menus_give[]')
     rating_receive = request.form['rating_give']
     comment_receive = request.form['comment_give']
@@ -294,21 +293,6 @@ def save_comment():
 
     return jsonify({"result" : "success"});
     # return render_template('/main.html')
-
-
-
-
-# @app.get('/main')
-# def main():
-#     decoded = decode_token()
-#     if decoded['result'] != 'success':
-#         return render_template('main.html', token_err_msg=decoded['msg'])
-#     else:
-#        print(decoded['msg']) 
-#     user_info = db.users.find_one({'user_id': decoded['data']}, {'_id': False})
-   
-#     return render_template('login.html', page_name="home", user_info=user_info)
-
 
 if __name__ == '__main__':  
    app.run('0.0.0.0',port=5000,debug=True)
