@@ -193,6 +193,7 @@
         $(".list-group").html("");
         $(".menu_rating").html("");
         $(".star-ratings").html("");
+        $(".comment_table").html("");
 
         if (meal_time == 'breakfast'){
           // 모달 제목
@@ -219,6 +220,22 @@
                             <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
                           </div>`;
           $(".star-ratings").append(star_html);
+
+          // 이전에 작성된 리뷰 테이블 표시
+          let comment_list = data.usersInfoBreakfast;
+          console.log('---',data.usersInfobreakfast);
+          let table_html = '';
+          
+          if ( comment_list != null) {
+            for( let i = 0; i < comment_list.length; i++ ) {
+              table_html += `<tr>
+                              <td>${comment_list[i].postDate}</td>
+                              <td>${comment_list[i].userId}</td>
+                              <td>${comment_list[i].comment}</td>
+                            </tr>`;
+            }
+          }
+          $(".comment_table").append(table_html);
         }
         else if (meal_time == 'lunch'){
           // 모달 제목
@@ -245,6 +262,23 @@
                             <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
                           </div>`;
           $(".star-ratings").append(star_html);
+
+          let comment_list = data.usersInfoLunch;
+          console.log('---',data.usersInfoLunch);
+          let table_html = '';
+          
+          if ( comment_list != null) {
+            for( let i = 0; i < comment_list.length; i++ ) {
+              table_html += `<tr>
+                              <td>${comment_list[i].postDate}</td>
+                              <td>${comment_list[i].userId}</td>
+                              <td>${comment_list[i].comment}</td>
+                            </tr>`;
+            }
+          }
+          $(".comment_table").append(table_html);
+
+
         }
         else if (meal_time == 'dinner'){
           // 모달 제목
@@ -271,7 +305,26 @@
                             <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
                           </div>`;
           $(".star-ratings").append(star_html);
+
+          let comment_list = data.usersInfoDinner;
+          console.log('---',data.usersInfoDinner);
+          let table_html = '';
+            
+          if ( comment_list != null) {
+            for( let i = 0; i < comment_list.length; i++ ) {
+              table_html += `<tr>
+                              <td>${comment_list[i].postDate}</td>
+                              <td>${comment_list[i].userId}</td>
+                              <td>${comment_list[i].comment}</td>
+                            </tr>`;
+            }
+          }
+          $(".comment_table").append(table_html);
+
+
         }
+       
+
         
         
       }
@@ -304,7 +357,7 @@
       <div class="modal fade" id="breakfastModal" tabindex="-1" aria-labelledby="breakfastModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
           <div class="modal-content">
-            
+         
             <!-- Modal header -->
             <div class="modal-header" style="text-align: center">
               <h5 class="modal-title" id="breakfastModalLabel">
@@ -332,6 +385,10 @@
                   
                   </div>
                 </div>
+            <!-- </div> -->
+              <hr />
+              <div>
+
               </div>
 
             <!-- 리뷰 작성하기 -->
@@ -370,19 +427,36 @@
                 </form> -->
               </div>
             </div>
-              <div style="width:100px">
+            <hr />
+              <!-- <div style="width:100px">
                 <button type="button" class="btn btn-secondary">리뷰 보기</button>
-              </div>
+              </div> -->
               
             <!-- 이전 리뷰 보기 -->     
-            <div>
-              <div class="card" style="width: 70rem; margin:0 auto">
-                <div class="card-body">
-                  <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                  <a href="#" class="card-link">Card link</a>
-                  <a href="#" class="card-link">Another link</a>
-                </div>
-              </div>
+            <div class="card" style="width: 60rem; margin:0 auto">
+              <div class="card-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col" class="col-2">작성일</th>
+                    <th scope="col" class="col-2">아이디</th>
+                    <th scope="col" class="col-9">리뷰</th>
+                  </tr>
+                </thead>
+                <tbody class="comment_table">
+                  <tr>
+                    <td>{{usersInfoLunch[0].postDate}}</td>
+                    <td>{{usersInfoLunch[0].userId}}</td>
+                    <td>{{usersInfoLunch[0].comment}}</td>
+                  </tr>
+                  <tr>
+                    <td>{{usersInfoLunch[1].postDate}}</td>
+                    <td>{{usersInfoLunch[1].userId}}</td>
+                    <td>{{usersInfoLunch[1].comment}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
             </div>
 
             <div class="modal-footer">
