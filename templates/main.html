@@ -133,82 +133,84 @@
         
         // 조식, 중식, 석식 구분
         let meal_time = $(".modal-title").text();
-  
+        let meal_menus;
+
         console.log(meal_time);
-        if( meal_time == "오늘의 점심입니다." ){
-          $.ajax({
+        
+        if( meal_time == "오늘의 아침입니다." ){
+          meal_menus = data.menusBreakfast
+        } else if( meal_time == "오늘의 점심입니다." ) {
+          meal_menus = data.menusLunch
+        } else {
+          meal_menus = data.menusDinner
+        }
+
+        $.ajax({
             type: "POST",
             url: "/main/saveComment",
             data: {
               userId_give : data.currentUser,
               postDate_give : data.showToday,
-              menus_give : data.menusLunch,
+              menus_give : meal_menus,
               rating_give : comment_star,
               comment_give : comment_text
             },
             success: function(response) {
               if (response["result"] == "success") {
-                // alert("포스팅 성공~!");
+                alert("저장 성공~!");
                 window.location.reload();
               }
               else {
-                alert("오류");
+                alert("저장 오류");
+                window.location.reload();
               }
             }
           })
+
+
+          console.log(comment_text, comment_star, typeof comment_star);
+          // window.location.reload();
         }
-
-
-        console.log(comment_text, comment_star, typeof comment_star);
-        // window.location.reload();
-      }
+  
 
 
       // 조식,중식,석식 버튼을 눌렀을때 아침이면 해당 html 태그 값들을 넣어서 append
       $(document).on("click", "#meal_button", function(){
         let meal_time = $(this).data('id');
 
-        if ( meal_time == 'breakfast') {
-          
-        }
-        else if (meal_time == 'lunch') {
-          append_html( {{ data|safe }}, meal_time )
-          // let menus = JSON.pares( {{ data | safe }} )
-          // console.log(menus);
-          // $(".list-group").append()
-        }
+        // if ( meal_time == 'breakfast') {
+        //   append_html( {{ data|safe }}, meal_time );
+        // }
+        // else if (meal_time == 'lunch') {
+        //   append_html( {{ data|safe }}, meal_time );
+        // }
+        append_html( {{ data|safe }}, meal_time );
       });
 
       function append_html(data, meal_time) {
         console.log(data);
-        
-        if (meal_time == 'lunch'){
+        $(".modal-title").html("");
+        $(".list-group").html("");
+        $(".menu_rating").html("");
+        $(".star-ratings").html("");
+
+        if (meal_time == 'breakfast'){
           // 모달 제목
-          $(".modal-title").html("");
-          $(".modal-title").text('오늘의 점심입니다.');
+          $(".modal-title").text('오늘의 아침입니다.');
 
           // 메뉴 리스트
-          // console.log(data.menusLunch.length);
           let menu_list = '';
-          for ( let i = 0; i < data.menusLunch.length; i++ ) {
-            // console.log(i);
-            menu_list += `<li class="list-group-item">${data.menusLunch[i]}</li>`;
+          for ( let i = 0; i < data.menusBreakfast.length; i++ ) {
+            menu_list += `<li class="list-group-item">${data.menusBreakfast[i]}</li>`;
           }
-          $(".list-group").html("");
           $(".list-group").append(menu_list);
           
           // 해당 메뉴 점수 표시
-          let menu_rating = data.ratingLunch;
-          if( menu_rating == null ){
-            $(".menu_rating").text('아직 후기가 없습니다.');
-          }
-          else
-          $(".menu_rating").html("");
+          let menu_rating = data.ratingBreakfast;
           $(".menu_rating").text( String(menu_rating) + " / 5");
 
           // 해당 메뉴 별점수 표시
           let star_score = menu_rating / 5 * 100
-          // console.log(star_score);
           let star_html = `<div class="star-ratings-fill space-x-2 text-lg" style="width:${star_score}%;font-size: 40px;">
                               <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
                           </div>
@@ -216,9 +218,61 @@
                           <div class="star-ratings-base space-x-2 text-lg" style="font-size: 40px;">
                             <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
                           </div>`;
-          $(".star-ratings").html("");
           $(".star-ratings").append(star_html);
         }
+        else if (meal_time == 'lunch'){
+          // 모달 제목
+          $(".modal-title").text('오늘의 점심입니다.');
+
+          // 메뉴 리스트
+          let menu_list = '';
+          for ( let i = 0; i < data.menusLunch.length; i++ ) {
+            menu_list += `<li class="list-group-item">${data.menusLunch[i]}</li>`;
+          }
+          $(".list-group").append(menu_list);
+          
+          // 해당 메뉴 점수 표시
+          let menu_rating = data.ratingLunch;
+          $(".menu_rating").text( String(menu_rating) + " / 5");
+
+          // 해당 메뉴 별점수 표시
+          let star_score = menu_rating / 5 * 100
+          let star_html = `<div class="star-ratings-fill space-x-2 text-lg" style="width:${star_score}%;font-size: 40px;">
+                              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                          </div>
+                        
+                          <div class="star-ratings-base space-x-2 text-lg" style="font-size: 40px;">
+                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                          </div>`;
+          $(".star-ratings").append(star_html);
+        }
+        else if (meal_time == 'dinner'){
+          // 모달 제목
+          $(".modal-title").text('오늘의 저녁입니다.');
+
+          // 메뉴 리스트
+          let menu_list = '';
+          for ( let i = 0; i < data.menusDinner.length; i++ ) {
+            menu_list += `<li class="list-group-item">${data.menusDinner[i]}</li>`;
+          }
+          $(".list-group").append(menu_list);
+          
+          // 해당 메뉴 점수 표시
+          let menu_rating = data.ratingDinner;
+          $(".menu_rating").text( String(menu_rating) + " / 5");
+
+          // 해당 메뉴 별점수 표시
+          let star_score = menu_rating / 5 * 100
+          let star_html = `<div class="star-ratings-fill space-x-2 text-lg" style="width:${star_score}%;font-size: 40px;">
+                              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                          </div>
+                        
+                          <div class="star-ratings-base space-x-2 text-lg" style="font-size: 40px;">
+                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                          </div>`;
+          $(".star-ratings").append(star_html);
+        }
+        
         
       }
 
@@ -316,10 +370,19 @@
                 </form> -->
               </div>
             </div>
-
+              <div style="width:100px">
+                <button type="button" class="btn btn-secondary">리뷰 보기</button>
+              </div>
+              
             <!-- 이전 리뷰 보기 -->     
             <div>
-              <div></div>
+              <div class="card" style="width: 70rem; margin:0 auto">
+                <div class="card-body">
+                  <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                  <a href="#" class="card-link">Card link</a>
+                  <a href="#" class="card-link">Another link</a>
+                </div>
+              </div>
             </div>
 
             <div class="modal-footer">
