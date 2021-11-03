@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--  bulma  -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
+    />
+    <!--  Fontawesome  -->
+    <script
+      src="https://kit.fontawesome.com/1d19cec74a.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <!--  Jquery   -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"
+      integrity="sha512-3j3VU6WC5rPQB4Ld1jnLV7Kd5xr+cq9avvhwqzbH/taCRNURoeEpoPBK9pDyeukwSxwRPJ8fDgvYXd6SkaZ2TA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <script>
+      function signup() {
+        let userid = $("#userid").val();
+        let userpw = $("#userpassword").val();
+        let userpw_val = $("#userpassword_val").val();
+        let username = $("#username").val();
+        let useremail = $("#useremail").val();
+
+        console.log("userid", userid);
+        console.log("userpassword", userpw);
+        console.log("userpassword_val", userpw_val);
+        console.log("username", username);
+        console.log("useremail", useremail);
+
+        $.ajax({
+          type: "POST",
+          url: "/api/signup",
+          data: {
+            id_give: userid,
+            pw_give: userpw,
+            name_give: username,
+            email_give: useremail,
+          },
+          success: function (response) {
+            if (response["result"] == "success") {
+              //   $.cookie("mytoken", response["token"]);
+              window.location.href = "/login";
+            } else {
+              alert(response["msg"]);
+            }
+          },
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <section class="hero is-info is-fullheight">
+      <div class="hero-body">
+        <div class="container">
+          <div class="columns is-centered">
+            <div class="column is-6-tablet is-6-desktop is-5-widescreen">
+              <form action="" class="box">
+                <div>
+                  <p
+                    class="label"
+                    style="
+                      text-align: center;
+                      margin-bottom: 30px;
+                      font-size: 30px;
+                    "
+                  >
+                    회원 가입
+                  </p>
+                </div>
+                <div class="field">
+                  <label for="" class="label">아이디 입력</label>
+                  <div class="control has-icons-left">
+                    <input
+                      type="text"
+                      placeholder="아이디"
+                      class="input"
+                      id="userid"
+                      required
+                    />
+                    <span class="icon is-small is-left">
+                      <i class="fa fa-user"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="" class="label">비밀번호 입력</label>
+                  <div class="control has-icons-left">
+                    <input
+                      type="password"
+                      placeholder="*******"
+                      class="input"
+                      id="userpassword"
+                      required
+                    />
+                    <span class="icon is-small is-left">
+                      <i class="fa fa-lock"></i>
+                    </span>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="" class="label">비밀번호 재입력</label>
+                  <div class="control has-icons-left">
+                    <input
+                      type="password"
+                      placeholder="*******"
+                      class="input"
+                      id="userpassword_val"
+                      required
+                    />
+                    <span class="icon is-small is-left">
+                      <i class="fa fa-lock"></i>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="" class="label">이름 입력</label>
+                  <div class="control has-icons-left">
+                    <input
+                      type="text"
+                      placeholder="이름"
+                      class="input"
+                      id="username"
+                      required
+                    />
+                    <span class="icon is-small is-left">
+                      <i class="fa fa-user"></i>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="" class="label">이메일 입력</label>
+                  <div class="control has-icons-left">
+                    <input
+                      type="text"
+                      placeholder="아이디"
+                      class="input"
+                      id="useremail"
+                      required
+                    />
+                    <span class="icon is-small is-left">
+                      <i class="fa fa-envelope"></i>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="field" style="text-align: center">
+                  <button class="button is-link" onClick="signup()">
+                    회원가입
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
